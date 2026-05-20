@@ -51,3 +51,6 @@ keep_local/
 
 # Claude Code
 .claude/
+
+# Nextpad++
+.npp*
