@@ -17,7 +17,7 @@ class PDFExporter {
                 if (!firstPage) doc.addPage('a4', 'landscape');
                 firstPage = false;
 
-                const { width: sw, height: sh } = inst.sheetDef;
+                const { length: sw, width: sh } = inst.sheetDef;
                 const scale = Math.min(drawW / sw, drawH / sh);
 
                 const offsetX = margin + (drawW - sw * scale) / 2;
@@ -53,8 +53,8 @@ class PDFExporter {
                 for (const p of inst.placements) {
                     const px = offsetX + p.x * scale;
                     const py = offsetY + p.y * scale;
-                    const pw = p.width  * scale;
-                    const ph = p.height * scale;
+                    const pw = p.length * scale;
+                    const ph = p.width  * scale;
 
                     const pc = this._hexToRgb(p.color || '#90a4ae');
                     const lr = this._lighten(pc.r, 0.85);
@@ -76,7 +76,7 @@ class PDFExporter {
                         doc.setFont('helvetica', 'normal');
                         doc.setFontSize(fs * 0.85);
                         if (ph > 9) {
-                            doc.text(`${p.width}×${p.height}`, px + pw/2, py + ph/2 + fs*0.6, { align: 'center' });
+                            doc.text(`${p.length}×${p.width}`, px + pw/2, py + ph/2 + fs*0.6, { align: 'center' });
                         }
                     }
                 }
@@ -135,8 +135,8 @@ class PDFExporter {
         doc.setFontSize(9);
         doc.setTextColor(30, 30, 30);
         doc.text('Part', p, y);
-        doc.text('W', p+80, y, { align:'right' });
-        doc.text('H', p+100, y, { align:'right' });
+        doc.text('L', p+80, y, { align:'right' });
+        doc.text('B', p+100, y, { align:'right' });
         doc.text('Qty', p+120, y, { align:'right' });
         doc.text('Material', p+130, y);
         y += 4;
@@ -149,7 +149,7 @@ class PDFExporter {
             for (const inst of sr.instances) {
                 for (const pl of inst.placements) {
                     if (!summary.has(pl.partName)) {
-                        summary.set(pl.partName, { name: pl.partName, w: pl.rotated ? pl.height : pl.width, h: pl.rotated ? pl.width : pl.height, qty: 0, mat: sr.materialName });
+                        summary.set(pl.partName, { name: pl.partName, w: pl.rotated ? pl.width : pl.length, h: pl.rotated ? pl.length : pl.width, qty: 0, mat: sr.materialName });
                     }
                     summary.get(pl.partName).qty++;
                 }

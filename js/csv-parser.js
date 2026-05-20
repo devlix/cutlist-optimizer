@@ -3,11 +3,11 @@
 // Supported CSV formats:
 //
 // Format A – parts only:
-//   Name,Width,Height,Qty,Material
+//   Name,Length,Width,Qty,Material
 //   Side Panel,800,600,2,Plywood 18mm
 //
 // Format B – sheets + parts (column 1 = "Type"):
-//   Type,Name,Width,Height,Qty,Material
+//   Type,Name,Length,Width,Qty,Material
 //   Sheet,Plywood 18mm,2440,1220,2,
 //   Part,Side Panel,800,600,2,Plywood 18mm
 //
@@ -26,13 +26,13 @@ class CSVParser {
         // Determine format
         const typeCol   = headers.indexOf('type');
         const nameCol   = this._col(headers, 'name', 'part', 'del', 'label');
-        const widthCol  = this._col(headers, 'width', 'bredde', 'w', 'length', 'lengde', 'l');
-        const heightCol = this._col(headers, 'height', 'høyde', 'h', 'depth', 'dybde', 'd');
+        const lengthCol = this._col(headers, 'length', 'lengde', 'l', 'width', 'bredde', 'w');
+        const widthCol  = this._col(headers, 'height', 'høyde', 'h', 'depth', 'dybde', 'd', 'width', 'bredde', 'w');
         const qtyCol    = this._col(headers, 'qty', 'quantity', 'antall', 'count', 'stk', 'q');
         const matCol    = this._col(headers, 'material', 'sheet', 'plate', 'materiale', 'board');
 
-        if (nameCol === -1 || widthCol === -1 || heightCol === -1) {
-            throw new Error('CSV-header mangler påkrevde kolonner: Name, Width, Height.\nHeaders funnet: ' + headers.join(', '));
+        if (nameCol === -1 || lengthCol === -1 || widthCol === -1) {
+            throw new Error('CSV-header mangler påkrevde kolonner: Name, Length, Width.\nHeaders funnet: ' + headers.join(', '));
         }
 
         const sheets = [];
@@ -46,17 +46,17 @@ class CSVParser {
             const type = typeCol >= 0 ? (row[typeCol] || '').toLowerCase() : 'part';
 
             const name   = row[nameCol]   || `Item ${i}`;
+            const length = this._num(row[lengthCol]);
             const width  = this._num(row[widthCol]);
-            const height = this._num(row[heightCol]);
             const qty    = qtyCol >= 0 ? Math.max(1, Math.round(this._num(row[qtyCol]) || 1)) : 1;
             const mat    = matCol >= 0 ? (row[matCol] || '').trim() : '';
 
-            if (!width || !height) continue; // skip empty / invalid rows
+            if (!length || !width) continue; // skip empty / invalid rows
 
             if (type === 'sheet' || type === 'plate' || type === 'plate') {
-                sheets.push({ id: `s_${++idSeq}`, name, width, height, qty, color: null });
+                sheets.push({ id: `s_${++idSeq}`, name, length, width, qty, color: null });
             } else {
-                parts.push({ id: `p_${++idSeq}`, name, width, height, qty, material: mat });
+                parts.push({ id: `p_${++idSeq}`, name, length, width, qty, material: mat });
             }
         }
 

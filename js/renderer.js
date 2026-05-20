@@ -45,7 +45,7 @@ class CutlistRenderer {
 
   fitToScreen() {
     if (!this.instance) return;
-    const { width: sw, height: sh } = this.instance.sheetDef;
+    const { length: sw, width: sh } = this.instance.sheetDef;
     const cw = this.canvas.width;
     const ch = this.canvas.height;
     const pad = 48;
@@ -67,14 +67,14 @@ class CutlistRenderer {
     const p = this.selected;
     if (!p || !this.instance) return false;
 
-    const { width: sw, height: sh } = this.instance.sheetDef;
-    const cx = p.x + p.width  / 2;
-    const cy = p.y + p.height / 2;
-    const nw = p.height;
-    const nh = p.width;
+    const { length: sw, width: sh } = this.instance.sheetDef;
+    const cx = p.x + p.length / 2;
+    const cy = p.y + p.width  / 2;
+    const nw = p.width;
+    const nh = p.length;
 
-    p.width  = nw;
-    p.height = nh;
+    p.length = nw;
+    p.width  = nh;
     p.x = Math.max(0, Math.min(sw - nw, cx - nw / 2));
     p.y = Math.max(0, Math.min(sh - nh, cy - nh / 2));
     p.rotated = !p.rotated;
@@ -120,7 +120,7 @@ class CutlistRenderer {
 
   _drawSheet() {
     const ctx = this.ctx;
-    const { width: sw, height: sh, color } = this.instance.sheetDef;
+    const { length: sw, width: sh, color } = this.instance.sheetDef;
 
     // Shadow
     ctx.shadowColor = "rgba(0,0,0,.25)";
@@ -166,7 +166,7 @@ class CutlistRenderer {
       ctx.fillStyle = isInvalid
         ? "rgba(244,67,54,0.75)"
         : (p.color || "#90a4ae") + (sel ? "66" : "33");
-      ctx.fillRect(p.x, p.y, p.width, p.height);
+      ctx.fillRect(p.x, p.y, p.length, p.width);
 
       // Border
       ctx.strokeStyle = isInvalid
@@ -175,7 +175,7 @@ class CutlistRenderer {
           ? "#1565c0"
           : this._darken(p.color || "#90a4ae", 50);
       ctx.lineWidth = (isInvalid || sel ? 2.5 : 1) / this.zoom;
-      ctx.strokeRect(p.x, p.y, p.width, p.height);
+      ctx.strokeRect(p.x, p.y, p.length, p.width);
 
       // Kerf-zone: stiplet ramme rundt brikken som viser sagblad-sonen
       if (isDragged && this.kerf > 0) {
@@ -185,13 +185,13 @@ class CutlistRenderer {
           : "rgba(25,118,210,0.40)";
         ctx.lineWidth = 1 / this.zoom;
         ctx.setLineDash([4 / this.zoom, 3 / this.zoom]);
-        ctx.strokeRect(p.x - k, p.y - k, p.width + k * 2, p.height + k * 2);
+        ctx.strokeRect(p.x - k, p.y - k, p.length + k * 2, p.width + k * 2);
         ctx.setLineDash([]);
       }
 
       // Label – only if piece is large enough on screen
-      const screenW = p.width * this.zoom;
-      const screenH = p.height * this.zoom;
+      const screenW = p.length * this.zoom;
+      const screenH = p.width * this.zoom;
       if (screenW > 40 && screenH > 24) {
         this._drawLabel(p, screenW, screenH);
       }
@@ -210,8 +210,8 @@ class CutlistRenderer {
     ctx.textAlign = "center";
     ctx.textBaseline = "middle";
 
-    const cx = p.x + p.width / 2;
-    const cy = p.y + p.height / 2;
+    const cx = p.x + p.length / 2;
+    const cy = p.y + p.width  / 2;
     ctx.font = `500 ${fs}px Roboto, Arial, sans-serif`;
     ctx.fillStyle = "#1a1a1a";
     const label = p.rotated ? `${p.partName} ↻` : p.partName;
@@ -220,7 +220,7 @@ class CutlistRenderer {
     if (screenH > 38) {
       ctx.font = `${fs * 0.8}px Roboto, Arial, sans-serif`;
       ctx.fillStyle = "#444";
-      ctx.fillText(`${p.width}×${p.height}`, cx, cy + fs * 0.7);
+      ctx.fillText(`${p.length}×${p.width}`, cx, cy + fs * 0.7);
     }
   }
 
@@ -230,9 +230,9 @@ class CutlistRenderer {
     ctx.fillStyle = "#1565c0";
     for (const [hx, hy] of [
       [p.x, p.y],
-      [p.x + p.width, p.y],
-      [p.x, p.y + p.height],
-      [p.x + p.width, p.y + p.height],
+      [p.x + p.length, p.y],
+      [p.x, p.y + p.width],
+      [p.x + p.length, p.y + p.width],
     ]) {
       ctx.fillRect(hx - hs / 2, hy - hs / 2, hs, hs);
     }
@@ -241,7 +241,7 @@ class CutlistRenderer {
   _drawGrid() {
     const g = this.kerf;
     if (g <= 0 || g * this.zoom < 8) return;
-    const { width: sw, height: sh } = this.instance.sheetDef;
+    const { length: sw, width: sh } = this.instance.sheetDef;
     const ctx = this.ctx;
     ctx.strokeStyle = "rgba(0,0,0,0.10)";
     ctx.lineWidth = 0.5 / this.zoom;
@@ -286,7 +286,7 @@ class CutlistRenderer {
     return (
       ps.find(
         (p) =>
-          sx >= p.x && sx <= p.x + p.width && sy >= p.y && sy <= p.y + p.height,
+          sx >= p.x && sx <= p.x + p.length && sy >= p.y && sy <= p.y + p.width,
       ) || null
     );
   }
@@ -402,15 +402,15 @@ class CutlistRenderer {
     if (this.drag) {
       const { x: sx, y: sy } = this._canvasToSheet(cx, cy);
       const { p } = this.drag;
-      const { width: sw, height: sh } = this.instance.sheetDef;
-      p.x = Math.max(0, Math.min(sw - p.width,  sx - this.drag.offX));
-      p.y = Math.max(0, Math.min(sh - p.height, sy - this.drag.offY));
+      const { length: sw, width: sh } = this.instance.sheetDef;
+      p.x = Math.max(0, Math.min(sw - p.length, sx - this.drag.offX));
+      p.y = Math.max(0, Math.min(sh - p.width,  sy - this.drag.offY));
       const doSnap = this.kerf > 0 && (this.snapEnabled !== this.shiftDown);
       if (doSnap) {
         p.x = Math.round(p.x / this.kerf) * this.kerf;
         p.y = Math.round(p.y / this.kerf) * this.kerf;
-        p.x = Math.max(0, Math.min(sw - p.width,  p.x));
-        p.y = Math.max(0, Math.min(sh - p.height, p.y));
+        p.x = Math.max(0, Math.min(sw - p.length, p.x));
+        p.y = Math.max(0, Math.min(sh - p.width,  p.y));
       }
       // Real-time kerf check – drives visual feedback in _drawPlacements
       this.drag.isInvalid = this._hasOverlap(p);
@@ -425,7 +425,7 @@ class CutlistRenderer {
   _onUp(e) {
     if (this.drag) {
       const { p } = this.drag;
-      const { width: sw, height: sh } = this.instance.sheetDef;
+      const { length: sw, width: sh } = this.instance.sheetDef;
       let success = true;
       if (this._hasOverlap(p)) {
         const snapped = this._trySnapToValid(p, sw, sh);
@@ -452,10 +452,10 @@ class CutlistRenderer {
     return this.instance.placements.filter(p => {
       if (p === moved) return false;
       return (
-        moved.x < p.x + p.width  + k &&
-        moved.x + moved.width  + k > p.x &&
-        moved.y < p.y + p.height + k &&
-        moved.y + moved.height + k > p.y
+        moved.x < p.x + p.length + k &&
+        moved.x + moved.length + k > p.x &&
+        moved.y < p.y + p.width  + k &&
+        moved.y + moved.width  + k > p.y
       );
     });
   }
@@ -473,14 +473,14 @@ class CutlistRenderer {
 
     for (const o of overlaps) {
       const candidates = [
-        { x: o.x - p.width - k,  y: p.y },
-        { x: o.x + o.width  + k, y: p.y },
-        { x: p.x, y: o.y - p.height - k },
-        { x: p.x, y: o.y + o.height + k },
+        { x: o.x - p.length - k, y: p.y },
+        { x: o.x + o.length + k, y: p.y },
+        { x: p.x, y: o.y - p.width - k },
+        { x: p.x, y: o.y + o.width + k },
       ];
       for (const c of candidates) {
-        const nx = Math.max(0, Math.min(sw - p.width,  c.x));
-        const ny = Math.max(0, Math.min(sh - p.height, c.y));
+        const nx = Math.max(0, Math.min(sw - p.length, c.x));
+        const ny = Math.max(0, Math.min(sh - p.width,  c.y));
         const dist = Math.abs(nx - origX) + Math.abs(ny - origY);
         if (dist > threshold || dist >= bestDist) continue;
         p.x = nx; p.y = ny;

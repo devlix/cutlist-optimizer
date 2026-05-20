@@ -128,7 +128,7 @@ class CutlistOptimizer {
 
             // Sort largest area first – best results for MAXRECTS
             const sorted = [...matParts].sort((a, b) =>
-                (b.width * b.height) - (a.width * a.height)
+                (b.length * b.width) - (a.length * a.width)
             );
 
             const instances = [];
@@ -136,19 +136,19 @@ class CutlistOptimizer {
             const cap = (sheetDef.qty || 1) + 20; // never exceed this many sheets
 
             while (remaining.length > 0 && instances.length < cap) {
-                const bin = new MaxRectsBin(sheetDef.width, sheetDef.height, kerf);
+                const bin = new MaxRectsBin(sheetDef.length, sheetDef.width, kerf);
                 const placements = [];
                 const leftover = [];
 
                 for (const part of remaining) {
-                    const res = bin.insert(part.width, part.height, allowRotation);
+                    const res = bin.insert(part.length, part.width, allowRotation);
                     if (res) {
                         placements.push({
                             id: `pl_${Date.now()}_${Math.random().toString(36).slice(2, 7)}`,
                             partId: part.id,
                             partName: part.name,
                             x: res.x, y: res.y,
-                            width: res.w, height: res.h,
+                            length: res.w, width: res.h,
                             rotated: res.rotated,
                             color: part._color,
                         });
@@ -162,8 +162,8 @@ class CutlistOptimizer {
                     break;
                 }
 
-                const usedArea  = placements.reduce((s, p) => s + p.width * p.height, 0);
-                const totalArea = sheetDef.width * sheetDef.height;
+                const usedArea  = placements.reduce((s, p) => s + p.length * p.width, 0);
+                const totalArea = sheetDef.length * sheetDef.width;
                 instances.push({
                     index: instances.length,
                     sheetDef: { ...sheetDef },

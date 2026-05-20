@@ -70,15 +70,15 @@ document.addEventListener('DOMContentLoaded', () => {
 
 function loadDemo() {
     State.sheets = [
-        { id: uid('s'), name: 'Kryssfiner 18mm', width: 2440, height: 1220, qty: 3, color: '#d4a76a' },
-        { id: uid('s'), name: 'MDF 12mm',        width: 2440, height: 1220, qty: 2, color: '#c4a882' },
+        { id: uid('s'), name: 'Kryssfiner 18mm', length: 2440, width: 1220, qty: 3, color: '#d4a76a' },
+        { id: uid('s'), name: 'MDF 12mm',        length: 2440, width: 1220, qty: 2, color: '#c4a882' },
     ];
     State.parts = [
-        { id: uid('p'), name: 'Sideplate',  width: 800,  height: 600,  qty: 4, material: 'Kryssfiner 18mm' },
-        { id: uid('p'), name: 'Topp/Bunn',  width: 800,  height: 400,  qty: 4, material: 'Kryssfiner 18mm' },
-        { id: uid('p'), name: 'Hylle',      width: 760,  height: 380,  qty: 6, material: 'Kryssfiner 18mm' },
-        { id: uid('p'), name: 'Bakplate',   width: 790,  height: 590,  qty: 2, material: 'MDF 12mm' },
-        { id: uid('p'), name: 'Dør',        width: 400,  height: 590,  qty: 4, material: 'MDF 12mm' },
+        { id: uid('p'), name: 'Sideplate',  length: 800,  width: 600,  qty: 4, material: 'Kryssfiner 18mm' },
+        { id: uid('p'), name: 'Topp/Bunn',  length: 800,  width: 400,  qty: 4, material: 'Kryssfiner 18mm' },
+        { id: uid('p'), name: 'Hylle',      length: 760,  width: 380,  qty: 6, material: 'Kryssfiner 18mm' },
+        { id: uid('p'), name: 'Bakplate',   length: 790,  width: 590,  qty: 2, material: 'MDF 12mm' },
+        { id: uid('p'), name: 'Dør',        length: 400,  width: 590,  qty: 4, material: 'MDF 12mm' },
     ];
     renderSidebar();
 }
@@ -259,16 +259,16 @@ function openSheetModal(id) {
     if (id) {
         const s = State.sheets.find(s => s.id === id);
         title.textContent = 'Rediger plate';
-        document.getElementById('sheet-name').value  = s.name;
-        document.getElementById('sheet-width').value = s.width;
-        document.getElementById('sheet-height').value= s.height;
-        document.getElementById('sheet-qty').value   = s.qty;
-        document.getElementById('sheet-color').value = s.color;
+        document.getElementById('sheet-name').value   = s.name;
+        document.getElementById('sheet-length').value = s.length;
+        document.getElementById('sheet-width').value  = s.width;
+        document.getElementById('sheet-qty').value    = s.qty;
+        document.getElementById('sheet-color').value  = s.color;
     } else {
         title.textContent = 'Legg til plate';
-        document.getElementById('sheet-name').value  = '';
-        document.getElementById('sheet-width').value = 2440;
-        document.getElementById('sheet-height').value= 1220;
+        document.getElementById('sheet-name').value   = '';
+        document.getElementById('sheet-length').value = 2440;
+        document.getElementById('sheet-width').value  = 1220;
         document.getElementById('sheet-qty').value   = 1;
         document.getElementById('sheet-color').value = nextSheetColor();
     }
@@ -281,21 +281,21 @@ function closeSheetModal() {
 }
 
 function saveSheet() {
-    const name  = document.getElementById('sheet-name').value.trim();
-    const width = parseFloat(document.getElementById('sheet-width').value);
-    const height= parseFloat(document.getElementById('sheet-height').value);
-    const qty   = parseInt(document.getElementById('sheet-qty').value,10);
-    const color = document.getElementById('sheet-color').value;
+    const name   = document.getElementById('sheet-name').value.trim();
+    const length = parseFloat(document.getElementById('sheet-length').value);
+    const width  = parseFloat(document.getElementById('sheet-width').value);
+    const qty    = parseInt(document.getElementById('sheet-qty').value,10);
+    const color  = document.getElementById('sheet-color').value;
 
-    if (!name || !width || !height || qty < 1) {
+    if (!name || !length || !width || qty < 1) {
         showToast('Fyll ut alle felt korrekt.', 'warn'); return;
     }
 
     if (_sheetEditId) {
         const s = State.sheets.find(s => s.id === _sheetEditId);
-        Object.assign(s, { name, width, height, qty, color });
+        Object.assign(s, { name, length, width, qty, color });
     } else {
-        State.sheets.push({ id: uid('s'), name, width, height, qty, color });
+        State.sheets.push({ id: uid('s'), name, length, width, qty, color });
     }
 
     closeSheetModal();
@@ -332,16 +332,16 @@ function openPartModal(id) {
     if (id) {
         const p = State.parts.find(p => p.id === id);
         title.textContent = 'Rediger del';
-        document.getElementById('part-name').value  = p.name;
-        document.getElementById('part-width').value = p.width;
-        document.getElementById('part-height').value= p.height;
-        document.getElementById('part-qty').value   = p.qty;
+        document.getElementById('part-name').value   = p.name;
+        document.getElementById('part-length').value = p.length;
+        document.getElementById('part-width').value  = p.width;
+        document.getElementById('part-qty').value    = p.qty;
         sel.value = p.material || '';
     } else {
         title.textContent = 'Legg til del';
-        document.getElementById('part-name').value  = '';
-        document.getElementById('part-width').value = '';
-        document.getElementById('part-height').value= '';
+        document.getElementById('part-name').value   = '';
+        document.getElementById('part-length').value = '';
+        document.getElementById('part-width').value  = '';
         document.getElementById('part-qty').value   = 1;
         sel.value = State.sheets[0]?.name || '';
     }
@@ -355,20 +355,20 @@ function closePartModal() {
 
 function savePart() {
     const name    = document.getElementById('part-name').value.trim();
+    const length  = parseFloat(document.getElementById('part-length').value);
     const width   = parseFloat(document.getElementById('part-width').value);
-    const height  = parseFloat(document.getElementById('part-height').value);
     const qty     = parseInt(document.getElementById('part-qty').value, 10);
     const material= document.getElementById('part-material').value;
 
-    if (!name || !width || !height || qty < 1) {
+    if (!name || !length || !width || qty < 1) {
         showToast('Fyll ut alle felt korrekt.', 'warn'); return;
     }
 
     if (_partEditId) {
         const p = State.parts.find(p => p.id === _partEditId);
-        Object.assign(p, { name, width, height, qty, material });
+        Object.assign(p, { name, length, width, qty, material });
     } else {
-        State.parts.push({ id: uid('p'), name, width, height, qty, material });
+        State.parts.push({ id: uid('p'), name, length, width, qty, material });
     }
 
     closePartModal();
@@ -393,7 +393,7 @@ function renderSheetList() {
         <div class="list-item" data-id="${s.id}">
             <span class="color-dot" style="background:${s.color}"></span>
             <span class="item-name">${s.name}</span>
-            <span class="item-meta">${s.width}×${s.height} ×${s.qty}</span>
+            <span class="item-meta">${s.length}×${s.width} ×${s.qty}</span>
             <div class="item-actions">
                 <button class="icon-btn" onclick="openSheetModal('${s.id}')" title="Rediger">
                     <span class="material-icons">edit</span>
@@ -420,7 +420,7 @@ function renderPartList() {
     el.innerHTML = State.parts.map(p => `
         <div class="list-item" data-id="${p.id}">
             <span class="item-name">${p.name}</span>
-            <span class="item-meta">${p.width}×${p.height}  ×${p.qty}</span>
+            <span class="item-meta">${p.length}×${p.width}  ×${p.qty}</span>
             ${p.material ? `<span class="item-badge">${p.material}</span>` : ''}
             <div class="item-actions">
                 <button class="icon-btn" onclick="openPartModal('${p.id}')" title="Rediger">

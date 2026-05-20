@@ -54,7 +54,7 @@ CSV / manual input → State.sheets / State.parts
 - `unplaced[]` — parts that didn't fit
 - `totalEfficiency`, `totalSheets`
 
-Each `instance` has `placements[]` with `{x, y, width, height, rotated, color, partName, partId}`.
+Each `instance` has `placements[]` with `{x, y, length, width, rotated, color, partName, partId}`.
 
 ### Key design notes
 
