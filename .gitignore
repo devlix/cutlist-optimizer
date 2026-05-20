@@ -1,0 +1,53 @@
+# tilpasset for PWA + Firebase + vanilla JS
+
+# Node (hvis du senere installerer noe)
+
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Environment variables (valgfritt)
+
+.env
+.env.local
+.env.*.local
+
+# OS filer
+
+.DS_Store
+Thumbs.db
+
+# Editor / IDE
+
+.vscode/
+.idea/
+*.code-workspace
+
+# Logs
+
+*.log
+
+# Build / dist (hvis du legger til build senere)
+
+dist/
+build/
+
+# Firebase (kun hvis du senere bruker CLI)
+
+.firebase/
+firebase-debug.log
+
+# Service worker cache (dev artefakter)
+
+sw.js.map
+
+# Misc
+
+coverage/
+keepLocal/
+keep_local/
+*.pdf
+
+# Claude Code
+.claude/

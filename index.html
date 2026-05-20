@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="no">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#1565c0">
+    <title>Cutlist Optimizer</title>
+
+    <!-- Material Icons & Roboto from Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+
+    <link rel="icon" type="image/svg+xml" href="favicon.svg">
+    <link rel="stylesheet" href="css/style.css">
+</head>
+
+<body>
+
+    <div class="app-layout">
+
+        <!-- ── Top bar ──────────────────────────────────────────────────────────── -->
+        <header class="topbar">
+            <div class="topbar-brand">
+                <span class="material-icons">content_cut</span>
+                <span>Cutlist Optimizer</span>
+            </div>
+            <div class="topbar-spacer"></div>
+            <div class="topbar-actions">
+                <button class="btn btn-ghost" id="btn-import-csv">
+                    <span class="material-icons">upload_file</span>
+                    <span class="btn-label">Importer CSV</span>
+                </button>
+                <button class="btn btn-primary" id="btn-optimize">
+                    <span class="material-icons">auto_awesome</span>
+                    <span class="btn-label">Optimaliser</span>
+                </button>
+                <button class="btn btn-ghost" id="btn-export-pdf">
+                    <span class="material-icons">picture_as_pdf</span>
+                    <span class="btn-label">Eksporter PDF</span>
+                </button>
+            </div>
+        </header>
+
+        <div class="body-layout">
+
+            <!-- ── Sidebar ────────────────────────────────────────────────────── -->
+            <aside class="sidebar">
+
+                <!-- Settings -->
+                <div class="card">
+                    <div class="card-header" onclick="this.nextElementSibling.classList.toggle('collapsed')">
+                        <span class="material-icons">settings</span>
+                        <h2>Innstillinger</h2>
+                    </div>
+                    <div class="card-body">
+                        <div class="form-group">
+                            <label>Sagblad-tykkelse (kerf, mm)</label>
+                            <input type="number" id="kerf" value="3" min="0" max="20" step="0.5">
+                        </div>
+                        <div class="checkbox-row">
+                            <input type="checkbox" id="allow-rotation" checked>
+                            <label for="allow-rotation">Tillat rotasjon av deler</label>
+                        </div>
+                        <div class="checkbox-row">
+                            <input type="checkbox" id="snap-to-grid">
+                            <label for="snap-to-grid">Fest til rutenett (kerf-størrelse)</label>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Sheets -->
+                <div class="card">
+                    <div class="card-header" onclick="this.nextElementSibling.classList.toggle('collapsed')">
+                        <span class="material-icons">layers</span>
+                        <h2>Plater</h2>
+                        <button class="icon-btn-sm" id="btn-add-sheet" title="Legg til plate">
+                            <span class="material-icons">add</span>
+                        </button>
+                    </div>
+                    <div class="card-body" id="sheets-list"></div>
+                </div>
+
+                <!-- Parts -->
+                <div class="card">
+                    <div class="card-header" onclick="this.nextElementSibling.classList.toggle('collapsed')">
+                        <span class="material-icons">inventory_2</span>
+                        <h2>Deler</h2>
+                        <span class="badge" id="parts-count">0</span>
+                        <button class="icon-btn-sm" id="btn-add-part" title="Legg til del">
+                            <span class="material-icons">add</span>
+                        </button>
+                    </div>
+                    <div class="card-body" id="parts-list"></div>
+                </div>
+
+            </aside>
+
+            <!-- ── Main workspace ─────────────────────────────────────────────── -->
+            <main class="workspace">
+
+                <div class="sheet-tabs" id="sheet-tabs"></div>
+
+                <div class="canvas-container">
+                    <canvas id="main-canvas"></canvas>
+                    <div class="canvas-empty-state" id="canvas-empty-state">
+                        <span class="material-icons">content_cut</span>
+                        <p>Legg til plater og deler, klikk deretter <strong>Optimaliser</strong></p>
+                        <p>eller <button class="link-btn" id="btn-import-demo">last inn demo-data</button></p>
+                    </div>
+                </div>
+
+                <div class="stats-bar">
+                    <div class="stat">
+                        <span class="stat-label">Plate</span>
+                        <span class="stat-value" id="stat-current-sheet">–</span>
+                    </div>
+                    <div class="stat">
+                        <span class="stat-label">Effektivitet</span>
+                        <span class="stat-value" id="stat-efficiency">–</span>
+                    </div>
+                    <div class="stat">
+                        <span class="stat-label">Plasserte deler</span>
+                        <span class="stat-value" id="stat-parts-placed">–</span>
+                    </div>
+                    <div class="stat">
+                        <span class="stat-label">Ikke plassert</span>
+                        <span class="stat-value" id="stat-unplaced">–</span>
+                    </div>
+                    <div class="stats-spacer"></div>
+                    <div class="stat">
+                        <span class="stat-label">Zoom</span>
+                        <span class="stat-value" id="stat-zoom">100%</span>
+                    </div>
+                    <div class="canvas-controls">
+                        <button class="icon-btn" id="btn-zoom-in" title="Zoom inn">
+                            <span class="material-icons">zoom_in</span>
+                        </button>
+                        <button class="icon-btn" id="btn-zoom-out" title="Zoom ut">
+                            <span class="material-icons">zoom_out</span>
+                        </button>
+                        <button class="icon-btn" id="btn-zoom-fit" title="Tilpass skjerm">
+                            <span class="material-icons">fit_screen</span>
+                        </button>
+                    </div>
+                </div>
+
+            </main>
+        </div>
+    </div>
+
+    <!-- ── Modals ────────────────────────────────────────────────────────────────── -->
+
+    <!-- Sheet modal -->
+    <div class="modal-backdrop hidden" id="sheet-modal">
+        <div class="modal">
+            <div class="modal-header">
+                <h3 id="sheet-modal-title">Legg til plate</h3>
+                <button class="icon-btn" id="btn-close-sheet-modal">
+                    <span class="material-icons">close</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label>Navn / Materiale</label>
+                    <input type="text" id="sheet-name" placeholder="f.eks. Kryssfiner 18mm">
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Bredde (mm)</label>
+                        <input type="number" id="sheet-width" value="2440" min="1">
+                    </div>
+                    <div class="form-group">
+                        <label>Høyde (mm)</label>
+                        <input type="number" id="sheet-height" value="1220" min="1">
+                    </div>
+                    <div class="form-group">
+                        <label>Antall</label>
+                        <input type="number" id="sheet-qty" value="1" min="1">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>Farge (til visualisering)</label>
+                    <input type="color" id="sheet-color" value="#d4a76a">
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-flat" id="btn-cancel-sheet">Avbryt</button>
+                <button class="btn btn-primary" id="btn-save-sheet"
+                    style="background:var(--primary);color:#fff;">Lagre</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Part modal -->
+    <div class="modal-backdrop hidden" id="part-modal">
+        <div class="modal">
+            <div class="modal-header">
+                <h3 id="part-modal-title">Legg til del</h3>
+                <button class="icon-btn" id="btn-close-part-modal">
+                    <span class="material-icons">close</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label>Navn</label>
+                    <input type="text" id="part-name" placeholder="f.eks. Sideplate">
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Bredde (mm)</label>
+                        <input type="number" id="part-width" min="1" placeholder="800">
+                    </div>
+                    <div class="form-group">
+                        <label>Høyde (mm)</label>
+                        <input type="number" id="part-height" min="1" placeholder="600">
+                    </div>
+                    <div class="form-group">
+                        <label>Antall</label>
+                        <input type="number" id="part-qty" value="1" min="1">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>Materiale / Plate</label>
+                    <select id="part-material">
+                        <option value="">Ingen spesifikk</option>
+                    </select>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-flat" id="btn-cancel-part">Avbryt</button>
+                <button class="btn btn-primary" id="btn-save-part"
+                    style="background:var(--primary);color:#fff;">Lagre</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast -->
+    <div class="toast" id="toast"></div>
+
+    <!-- Hidden file input -->
+    <input type="file" id="csv-file-input" accept=".csv,.txt" style="display:none">
+
+    <!-- ── Scripts ───────────────────────────────────────────────────────────────── -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="js/csv-parser.js"></script>
+    <script src="js/optimizer.js"></script>
+    <script src="js/renderer.js"></script>
+    <script src="js/pdf-export.js"></script>
+    <script src="js/app.js"></script>
+
+</body>
+
+</html>

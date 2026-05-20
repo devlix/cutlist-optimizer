@@ -1,0 +1,14 @@
+# Cutlist Optimizer – eksempel CSV
+# Format B: Type, Navn, Bredde, Høyde, Antall, Materiale
+# Plater defineres med Type=Sheet, deler med Type=Part
+#
+Type,Name,Width,Height,Qty,Material
+Sheet,Kryssfiner 18mm,2440,1220,3,
+Sheet,MDF 12mm,2440,1220,2,
+Part,Sideplate,800,600,4,Kryssfiner 18mm
+Part,Topp/Bunn,800,400,4,Kryssfiner 18mm
+Part,Hylle,760,380,6,Kryssfiner 18mm
+Part,Mellomvegg,400,580,2,Kryssfiner 18mm
+Part,Bakplate,790,590,2,MDF 12mm
+Part,Dør,400,590,4,MDF 12mm
+Part,Skuffefront,380,150,6,MDF 12mm
