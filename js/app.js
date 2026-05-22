@@ -63,6 +63,7 @@ document.addEventListener('DOMContentLoaded', () => {
     bindPartEvents();
     bindCanvasControls();
     bindUnloadGuard();
+    bindSidebarResize();
 
     renderSidebar();
 });
@@ -496,6 +497,40 @@ function _tryRotate() {
     }
     const ok = renderer.rotateSelected();
     if (!ok) showToast('Kan ikke rotere – overlapp eller utenfor plate.', 'warn');
+}
+
+// ── Sidebar resize ────────────────────────────────────────────────────────────
+
+function bindSidebarResize() {
+    const sidebar  = document.getElementById('sidebar');
+    const resizer  = document.getElementById('sidebar-resizer');
+    const MIN = 200, MAX = 540;
+
+    const saved = localStorage.getItem('sidebarWidth');
+    if (saved) sidebar.style.width = saved + 'px';
+
+    resizer.addEventListener('mousedown', e => {
+        const startX = e.clientX;
+        const startW = sidebar.offsetWidth;
+        resizer.classList.add('dragging');
+        document.body.style.cursor      = 'col-resize';
+        document.body.style.userSelect  = 'none';
+
+        function onMove(e) {
+            const w = Math.min(MAX, Math.max(MIN, startW + e.clientX - startX));
+            sidebar.style.width = w + 'px';
+        }
+        function onUp() {
+            resizer.classList.remove('dragging');
+            document.body.style.cursor     = '';
+            document.body.style.userSelect = '';
+            localStorage.setItem('sidebarWidth', sidebar.offsetWidth);
+            document.removeEventListener('mousemove', onMove);
+            document.removeEventListener('mouseup',   onUp);
+        }
+        document.addEventListener('mousemove', onMove);
+        document.addEventListener('mouseup',   onUp);
+    });
 }
 
 // ── Unload guard ──────────────────────────────────────────────────────────────
