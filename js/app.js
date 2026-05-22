@@ -96,6 +96,12 @@ function bindTopBarEvents() {
         loadDemo();
         showToast('Demo-data lastet.', 'info');
     });
+    document.getElementById('btn-close-csv-modal').addEventListener('click', closeCSVPreviewModal);
+    document.getElementById('btn-cancel-csv').addEventListener('click', closeCSVPreviewModal);
+    document.getElementById('btn-confirm-csv').addEventListener('click', confirmCSVImport);
+    document.getElementById('csv-preview-modal').addEventListener('click', e => {
+        if (e.target === e.currentTarget) closeCSVPreviewModal();
+    });
 }
 
 async function handleCSVImport(e) {
@@ -104,6 +110,28 @@ async function handleCSVImport(e) {
     e.target.value = '';
     try {
         const text = await file.text();
+        openCSVPreviewModal(text, file.name);
+    } catch (err) {
+        showToast('Kunne ikke lese filen: ' + err.message, 'error');
+    }
+}
+
+function openCSVPreviewModal(text, filename) {
+    document.getElementById('csv-preview-title').textContent =
+        filename ? `Forhåndsvis CSV – ${filename}` : 'Forhåndsvis CSV';
+    document.getElementById('csv-preview-textarea').value = text;
+    document.getElementById('csv-preview-modal').classList.remove('hidden');
+    document.getElementById('csv-preview-textarea').focus();
+}
+
+function closeCSVPreviewModal() {
+    document.getElementById('csv-preview-modal').classList.add('hidden');
+    document.getElementById('csv-preview-textarea').value = '';
+}
+
+function confirmCSVImport() {
+    const text = document.getElementById('csv-preview-textarea').value;
+    try {
         const { sheets, parts } = csvParser.parse(text);
 
         if (sheets.length > 0) {
@@ -112,6 +140,7 @@ async function handleCSVImport(e) {
         }
         if (parts.length > 0) State.parts.push(...parts);
 
+        closeCSVPreviewModal();
         renderSidebar();
         showToast(`Importerte ${parts.length} deler${sheets.length ? ' og ' + sheets.length + ' plater' : ''}.`, 'success');
     } catch (err) {

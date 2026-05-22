@@ -236,6 +236,30 @@
         </div>
     </div>
 
+    <!-- CSV preview modal -->
+    <div class="modal-backdrop hidden" id="csv-preview-modal">
+        <div class="modal modal-lg">
+            <div class="modal-header">
+                <h3 id="csv-preview-title">Forhåndsvis CSV</h3>
+                <button class="icon-btn" id="btn-close-csv-modal">
+                    <span class="material-icons">close</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <textarea class="csv-textarea" id="csv-preview-textarea" spellcheck="false"></textarea>
+                <p class="csv-hint">Du kan redigere innholdet før det importeres.</p>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-flat" id="btn-cancel-csv">Avbryt</button>
+                <button class="btn btn-primary" id="btn-confirm-csv"
+                    style="background:var(--primary);color:#fff;">
+                    <span class="material-icons">upload_file</span>
+                    Importer
+                </button>
+            </div>
+        </div>
+    </div>
+
     <!-- Toast -->
     <div class="toast" id="toast"></div>
 
