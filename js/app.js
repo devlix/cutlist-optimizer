@@ -62,6 +62,7 @@ document.addEventListener('DOMContentLoaded', () => {
     bindSheetEvents();
     bindPartEvents();
     bindCanvasControls();
+    bindUnloadGuard();
 
     renderSidebar();
 });
@@ -495,6 +496,16 @@ function _tryRotate() {
     }
     const ok = renderer.rotateSelected();
     if (!ok) showToast('Kan ikke rotere – overlapp eller utenfor plate.', 'warn');
+}
+
+// ── Unload guard ──────────────────────────────────────────────────────────────
+
+function bindUnloadGuard() {
+    window.addEventListener('beforeunload', e => {
+        if (State.sheets.length === 0 && State.parts.length === 0) return;
+        e.preventDefault();
+        e.returnValue = '';   // required for Chrome
+    });
 }
 
 // ── Toast notifications ───────────────────────────────────────────────────────
