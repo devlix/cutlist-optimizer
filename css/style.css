@@ -22,7 +22,7 @@
     --shadow-md:    0 4px 12px rgba(0,0,0,.5);
     --shadow-lg:    0 12px 40px rgba(0,0,0,.6);
     --radius:       4px;
-    --sidebar-w:    280px;
+    --sidebar-w:    320px;
     --topbar-h:     56px;
     --statbar-h:    44px;
     font-size: 14px;
@@ -662,7 +662,7 @@ body {
 /* ── Responsive ──────────────────────────────────────────────────────────────── */
 
 @media (max-width: 640px) {
-    :root { --sidebar-w: 240px; }
+    :root { --sidebar-w: 260px; }
     .topbar-brand span:not(.material-icons) { display: none; }
     .btn .btn-label { display: none; }
 }
