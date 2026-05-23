@@ -1,0 +1,20 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 192 192">
+  <!-- Background -->
+  <rect width="192" height="192" rx="32" fill="#111318"/>
+  <!-- Amber cut-line across the board -->
+  <line x1="32" y1="96" x2="160" y2="96" stroke="#f5a623" stroke-width="2.5" stroke-dasharray="8 5" stroke-linecap="round"/>
+  <!-- Top panel (wood board) -->
+  <rect x="32" y="44" width="128" height="44" rx="4" fill="#1e2129" stroke="#2e3240" stroke-width="1.5"/>
+  <rect x="42" y="54" width="42" height="24" rx="3" fill="#f5a62322"/>
+  <rect x="92" y="54" width="28" height="24" rx="3" fill="#f5a62322"/>
+  <rect x="128" y="54" width="22" height="24" rx="3" fill="#f5a62322"/>
+  <!-- Bottom panel -->
+  <rect x="32" y="104" width="128" height="44" rx="4" fill="#1e2129" stroke="#2e3240" stroke-width="1.5"/>
+  <rect x="42" y="114" width="56" height="24" rx="3" fill="#f5a62322"/>
+  <rect x="106" y="114" width="44" height="24" rx="3" fill="#f5a62322"/>
+  <!-- Scissors icon top-right -->
+  <g transform="translate(138,30) scale(1.15)" fill="#f5a623">
+    <path d="M5.5 5.5A2.5 2.5 0 0 1 8 8a2.5 2.5 0 0 1-2.5 2.5A2.5 2.5 0 0 1 3 8a2.5 2.5 0 0 1 2.5-2.5zm0-3A5.5 5.5 0 0 0 0 8a5.5 5.5 0 0 0 5.5 5.5 5.5 5.5 0 0 0 3.88-1.6L12 14.5l3.5-3.5-7.63-7.63A5.47 5.47 0 0 0 5.5 2.5z"/>
+    <path d="M18.5 14.5A2.5 2.5 0 0 1 21 17a2.5 2.5 0 0 1-2.5 2.5A2.5 2.5 0 0 1 16 17a2.5 2.5 0 0 1 2.5-2.5zm-6-6L21 2.5 19.5 1 12 8.5l.5.5z"/>
+  </g>
+</svg>
