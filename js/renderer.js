@@ -162,14 +162,15 @@ class CutlistRenderer {
       const isDragged = this.drag?.p === p;
       const isInvalid = isDragged && this.drag.isInvalid;
 
-      // Fill – red when dragged into a kerf-violation position
-      ctx.fillStyle = isInvalid
+      // Fill – red when dragged into a kerf-violation position or on snap-back flash
+      const showError = isInvalid || p._flashing;
+      ctx.fillStyle = showError
         ? "rgba(244,67,54,0.75)"
         : (p.color || "#90a4ae") + (sel ? "66" : "33");
       ctx.fillRect(p.x, p.y, p.length, p.width);
 
       // Border
-      ctx.strokeStyle = isInvalid
+      ctx.strokeStyle = showError
         ? "#c62828"
         : sel
           ? "#1565c0"
@@ -494,11 +495,11 @@ class CutlistRenderer {
   }
 
   _flashError(p) {
-    const origColor = p.color;
-    p.color = "#f44336";
+    clearTimeout(p._flashTimer);
+    p._flashing = true;
     this.render();
-    setTimeout(() => {
-      p.color = origColor;
+    p._flashTimer = setTimeout(() => {
+      p._flashing = false;
       this.render();
     }, 400);
   }
