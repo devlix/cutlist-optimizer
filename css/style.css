@@ -670,6 +670,64 @@ body {
     margin-top: 6px;
 }
 
+/* ── Oversize warning modal ──────────────────────────────────────────────────── */
+
+.oversize-icon {
+    font-size: 22px;
+    color: var(--warn);
+    margin-right: 10px;
+    flex-shrink: 0;
+}
+
+.oversize-intro {
+    font-size: 13px;
+    color: var(--text-sec);
+    margin-bottom: 12px;
+    line-height: 1.5;
+}
+
+.oversize-list {
+    list-style: none;
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    overflow: hidden;
+}
+
+.oversize-list li {
+    display: flex;
+    align-items: baseline;
+    gap: 10px;
+    padding: 8px 12px;
+    border-bottom: 1px solid var(--border);
+    font-size: 13px;
+}
+
+.oversize-list li:last-child { border-bottom: none; }
+
+.oversize-list li:nth-child(odd) { background: rgba(255,255,255,.02); }
+
+.oversize-part-name {
+    flex: 1;
+    font-weight: 500;
+    color: var(--text);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.oversize-dims {
+    font-family: 'Roboto Mono', monospace;
+    font-size: 11px;
+    color: var(--warn);
+    white-space: nowrap;
+}
+
+.oversize-sheet {
+    font-size: 11px;
+    color: var(--text-hint);
+    white-space: nowrap;
+}
+
 /* ── Toast ───────────────────────────────────────────────────────────────────── */
 
 .toast {

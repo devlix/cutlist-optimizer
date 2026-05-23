@@ -98,6 +98,7 @@ function bindTopBarEvents() {
         loadDemo();
         showToast('Demo-data lastet.', 'info');
     });
+    document.getElementById('btn-oversize-ok').addEventListener('click', closeOversizeModal);
     document.getElementById('btn-close-csv-modal').addEventListener('click', closeCSVPreviewModal);
     document.getElementById('btn-cancel-csv').addEventListener('click', closeCSVPreviewModal);
     document.getElementById('btn-confirm-csv').addEventListener('click', confirmCSVImport);
@@ -145,6 +146,7 @@ function confirmCSVImport() {
         closeCSVPreviewModal();
         renderSidebar();
         showToast(`Importerte ${parts.length} deler${sheets.length ? ' og ' + sheets.length + ' plater' : ''}.`, 'success');
+        warnOversizeParts(parts);
     } catch (err) {
         showToast('CSV-feil: ' + err.message, 'error');
     }
@@ -184,6 +186,7 @@ function runOptimizer() {
             State.ui.activeInstanceIdx = 0;
             renderResults();
             showToast(`Ferdig! ${State.results.totalSheets} plater, ${State.results.totalEfficiency.toFixed(1)}% effektivitet.`, 'success');
+            warnOversizeParts(State.results.unplaced);
         } catch (err) {
             showToast('Optimeringsfeil: ' + err.message, 'error');
         } finally {
@@ -405,6 +408,7 @@ function savePart() {
     closePartModal();
     renderSidebar();
     showToast(`Del "${name}" lagret.`, 'success');
+    warnOversizeParts([{ name, length, width, material }]);
 }
 
 // ── Sidebar rendering ─────────────────────────────────────────────────────────
@@ -497,6 +501,54 @@ function _tryRotate() {
     }
     const ok = renderer.rotateSelected();
     if (!ok) showToast('Kan ikke rotere – overlapp eller utenfor plate.', 'warn');
+}
+
+// ── Oversize warning ──────────────────────────────────────────────────────────
+
+function partFitsAnySheet(part, sheets) {
+    if (!sheets.length) return true; // no sheets yet — defer check
+    const targets = part.material
+        ? sheets.filter(s => s.name === part.material)
+        : sheets;
+    const pool = targets.length ? targets : sheets; // fallback to all sheets
+    return pool.some(s =>
+        (part.length <= s.length && part.width <= s.width) ||
+        (part.width  <= s.length && part.length <= s.width)
+    );
+}
+
+function warnOversizeParts(parts) {
+    if (!State.sheets.length) return; // nothing to compare against
+    const oversized = parts.filter(p => !partFitsAnySheet(p, State.sheets));
+    if (!oversized.length) return;
+
+    // Deduplicate by name (optimizer expands qty into individual items)
+    const unique = [...new Map(oversized.map(p => [p.name, p])).values()];
+
+    const intro = document.getElementById('oversize-intro');
+    intro.textContent = unique.length === 1
+        ? 'Følgende del er større enn alle tilgjengelige plater og kan ikke plasseres:'
+        : `Følgende ${unique.length} deler er større enn alle tilgjengelige plater og kan ikke plasseres:`;
+
+    document.getElementById('oversize-list').innerHTML = unique.map(p => {
+        const target = p.material
+            ? State.sheets.find(s => s.name === p.material)
+            : State.sheets[0];
+        const sheetTxt = target
+            ? `plate: ${target.length}×${target.width}`
+            : 'ingen matchende plate';
+        return `<li>
+            <span class="oversize-part-name">${p.name}</span>
+            <span class="oversize-dims">${p.length}×${p.width} mm</span>
+            <span class="oversize-sheet">(${sheetTxt})</span>
+        </li>`;
+    }).join('');
+
+    document.getElementById('oversize-modal').classList.remove('hidden');
+}
+
+function closeOversizeModal() {
+    document.getElementById('oversize-modal').classList.add('hidden');
 }
 
 // ── Sidebar resize ────────────────────────────────────────────────────────────
