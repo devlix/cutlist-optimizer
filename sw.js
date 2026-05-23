@@ -2,7 +2,7 @@
 
 // Bump this version string whenever you deploy new code.
 // The old cache is deleted automatically on activate.
-const CACHE = 'cutlist-v3';
+const CACHE = 'cutlist-v4';
 
 const PRECACHE = [
     './',

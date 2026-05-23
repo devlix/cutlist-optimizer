@@ -53,17 +53,30 @@ body {
 /* ── Top bar ─────────────────────────────────────────────────────────────────── */
 
 .topbar {
-    height: var(--topbar-h);
+    /* WCO: fill the OS title-bar area; fall back to --topbar-h in standalone mode */
+    height: env(titlebar-area-height, var(--topbar-h));
+    /* Offset content past the macOS traffic-light buttons (no-op on Windows/Linux) */
+    padding-left: max(16px, env(titlebar-area-x, 16px));
+    padding-right: 16px;
     background: var(--bg);
     color: var(--text);
     display: flex;
     align-items: center;
-    padding: 0 16px;
     gap: 12px;
     border-bottom: 1px solid var(--border);
     box-shadow: 0 1px 0 rgba(245,166,35,.12);
     z-index: 100;
     flex-shrink: 0;
+    /* Make the whole bar a drag handle for the OS window */
+    -webkit-app-region: drag;
+    app-region: drag;
+}
+
+/* Restore pointer events for interactive children inside the drag region */
+.topbar-brand,
+.topbar-actions {
+    -webkit-app-region: no-drag;
+    app-region: no-drag;
 }
 
 .topbar-brand {
