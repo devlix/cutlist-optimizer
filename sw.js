@@ -2,7 +2,7 @@
 
 // Bump this version string whenever you deploy new code.
 // The old cache is deleted automatically on activate.
-const CACHE = 'cutlist-v1';
+const CACHE = 'cutlist-v2';
 
 const PRECACHE = [
     './',
@@ -14,8 +14,10 @@ const PRECACHE = [
     './js/pdf-export.js',
     './js/app.js',
     './favicon.svg',
-    './icons/icon-192.svg',
-    './icons/icon-512.svg',
+    './icons/icon-192.png',
+    './icons/icon-512.png',
+    './screenshots/desktop.png',
+    './screenshots/mobile.png',
     './manifest.json',
     // jsPDF from CDN — cached so PDF export works offline
     'https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js',
