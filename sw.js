@@ -2,7 +2,7 @@
 
 // Bump this version string whenever you deploy new code.
 // The old cache is deleted automatically on activate.
-const CACHE = 'cutlist-v2';
+const CACHE = 'cutlist-v3';
 
 const PRECACHE = [
     './',
@@ -16,6 +16,7 @@ const PRECACHE = [
     './favicon.svg',
     './icons/icon-192.png',
     './icons/icon-512.png',
+    './icons/icon-512-maskable.png',
     './screenshots/desktop.png',
     './screenshots/mobile.png',
     './manifest.json',
